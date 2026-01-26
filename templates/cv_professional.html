@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            margin: 1.5cm;
+            size: A4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .name {
+            font-size: 26pt;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .job-title {
+            font-size: 12pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .contact {
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .contact span {
+            margin: 0 8px;
+        }
+        
+        .section {
+            margin-bottom: 18px;
+        }
+        
+        .section-title {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+        }
+        
+        .summary {
+            font-size: 10pt;
+            color: #555;
+            line-height: 1.6;
+            text-align: justify;
+        }
+        
+        .entry {
+            margin-bottom: 14px;
+        }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 3px;
+        }
+        
+        .entry-title {
+            font-weight: bold;
+            font-size: 10.5pt;
+            color: #333;
+        }
+        
+        .entry-date {
+            font-size: 9pt;
+            color: #666;
+        }
+        
+        .entry-subtitle {
+            font-size: 9.5pt;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        
+        .entry-description {
+            font-size: 9.5pt;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .skill-tag {
+            background: #ecf0f1;
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 9pt;
+            color: #333;
+        }
+        
+        .skills-section {
+            margin-bottom: 10px;
+        }
+        
+        .skills-label {
+            font-weight: bold;
+            font-size: 9pt;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="name">{{ data.firstName }} {{ data.lastName }}</h1>
+        {% if data.jobTitle %}
+        <div class="job-title">{{ data.jobTitle }}</div>
+        {% endif %}
+        <div class="contact">
+            {% if data.email %}<span>{{ data.email }}</span>{% endif %}
+            {% if data.phone %}<span>• {{ data.phone }}</span>{% endif %}
+            {% if data.location %}<span>• {{ data.location }}</span>{% endif %}
+            {% if data.linkedin %}<span>• {{ data.linkedin }}</span>{% endif %}
+        </div>
+    </div>
+    
+    {% if data.summary %}
+    <div class="section">
+        <div class="section-title">Professional Summary</div>
+        <p class="summary">{{ data.summary }}</p>
+    </div>
+    {% endif %}
+    
+    {% if data.experience %}
+    <div class="section">
+        <div class="section-title">Work Experience</div>
+        {% for exp in data.experience %}
+        <div class="entry">
+            <div class="entry-header">
+                <span class="entry-title">{{ exp.title }}</span>
+                <span class="entry-date">{{ exp.start }} - {{ exp.end or 'Present' }}</span>
+            </div>
+            <div class="entry-subtitle">{{ exp.company }}</div>
+            {% if exp.description %}
+            <div class="entry-description">{{ exp.description }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if data.education %}
+    <div class="section">
+        <div class="section-title">Education</div>
+        {% for edu in data.education %}
+        <div class="entry">
+            <div class="entry-header">
+                <span class="entry-title">{{ edu.degree }}{% if edu.field %} in {{ edu.field }}{% endif %}</span>
+                <span class="entry-date">{{ edu.start }}{% if edu.end %} - {{ edu.end }}{% endif %}</span>
+            </div>
+            <div class="entry-subtitle">{{ edu.school }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if data.skills and (data.skills.technical or data.skills.soft or data.skills.languages) %}
+    <div class="section">
+        <div class="section-title">Skills</div>
+        
+        {% if data.skills.technical %}
+        <div class="skills-section">
+            <div class="skills-label">Technical Skills</div>
+            <div class="skills-container">
+                {% for skill in data.skills.technical %}
+                <span class="skill-tag">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if data.skills.soft %}
+        <div class="skills-section">
+            <div class="skills-label">Soft Skills</div>
+            <div class="skills-container">
+                {% for skill in data.skills.soft %}
+                <span class="skill-tag">{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if data.skills.languages %}
+        <div class="skills-section">
+            <div class="skills-label">Languages</div>
+            <div class="skills-container">
+                {% for lang in data.skills.languages %}
+                <span class="skill-tag">{{ lang }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>

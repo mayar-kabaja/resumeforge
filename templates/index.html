@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeForge — Free AI CV Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #131316;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --border: rgba(255, 255, 255, 0.08);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(217, 70, 239, 0.05) 0%, transparent 60%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 11, 0.8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.75rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn-nav {
+            background: var(--gradient-1);
+            color: white;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .badge::before {
+            content: '✨';
+        }
+
+        .hero h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        .hero h1 .highlight {
+            font-style: italic;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 540px;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 60px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Preview mockup */
+        .preview-container {
+            margin-top: 5rem;
+            perspective: 1000px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .preview-mockup {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            max-width: 900px;
+            transform: rotateX(5deg);
+            box-shadow: 
+                0 50px 100px -20px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .preview-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3f3f46;
+        }
+
+        .preview-dot:nth-child(1) { background: #ef4444; }
+        .preview-dot:nth-child(2) { background: #eab308; }
+        .preview-dot:nth-child(3) { background: #22c55e; }
+
+        .preview-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 1.5rem;
+        }
+
+        .preview-sidebar {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .preview-form {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .preview-line {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+
+        .preview-line.short { width: 60%; }
+        .preview-line.medium { width: 80%; }
+        .preview-line.accent { background: var(--accent); width: 40%; }
+
+        /* Features Section */
+        .features {
+            position: relative;
+            z-index: 10;
+            padding: 8rem 2rem;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-header h2 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 3rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .features-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Templates Preview */
+        .templates {
+            position: relative;
+            z-index: 10;
+            padding: 8rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .templates-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .templates-header h2 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 3rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .template-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .template-preview {
+            aspect-ratio: 8.5/11;
+            padding: 1.5rem;
+            font-size: 0.6rem;
+            color: #333;
+        }
+
+        .template-preview.professional {
+            background: #fff;
+        }
+
+        .template-preview.modern {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .template-preview.minimal {
+            background: #fafafa;
+            border-left: 4px solid #000;
+        }
+
+        .template-name {
+            padding: 1rem;
+            background: var(--bg-card);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        footer p {
+            color: var(--text-secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .cta-group {
+                flex-direction: column;
+            }
+
+            .preview-content {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+
+    <nav>
+        <div class="logo">Resume<span>Forge</span></div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#templates">Templates</a>
+            <a href="/create" class="btn-nav">Create CV</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <span class="badge">100% Free • AI-Powered</span>
+        <h1>Build a CV that<br><span class="highlight">lands interviews</span></h1>
+        <p>Create professional, ATS-friendly resumes in minutes with AI-powered content suggestions. No signup required.</p>
+        <div class="cta-group">
+            <a href="/create" class="btn-primary">
+                Start Building →
+            </a>
+            <a href="#templates" class="btn-secondary">
+                View Templates
+            </a>
+        </div>
+
+        <div class="preview-container">
+            <div class="preview-mockup">
+                <div class="preview-header">
+                    <div class="preview-dot"></div>
+                    <div class="preview-dot"></div>
+                    <div class="preview-dot"></div>
+                </div>
+                <div class="preview-content">
+                    <div class="preview-sidebar">
+                        <div class="preview-line accent"></div>
+                        <div class="preview-line short"></div>
+                        <div class="preview-line medium"></div>
+                        <div class="preview-line"></div>
+                        <div class="preview-line short"></div>
+                        <br>
+                        <div class="preview-line accent"></div>
+                        <div class="preview-line medium"></div>
+                        <div class="preview-line"></div>
+                    </div>
+                    <div class="preview-form">
+                        <div class="preview-line accent" style="width: 30%"></div>
+                        <div class="preview-line"></div>
+                        <div class="preview-line medium"></div>
+                        <div class="preview-line short"></div>
+                        <br>
+                        <div class="preview-line accent" style="width: 25%"></div>
+                        <div class="preview-line"></div>
+                        <div class="preview-line"></div>
+                        <div class="preview-line medium"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="features-header">
+            <h2>Everything you need</h2>
+            <p>Professional tools, completely free</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Content Writer</h3>
+                <p>Get smart suggestions for your summary, bullet points, and skills. Our AI helps you sound professional.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>Multiple Templates</h3>
+                <p>Choose from professional, modern, and minimal designs. All optimized for ATS systems.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant PDF Export</h3>
+                <p>Download your CV as a perfectly formatted PDF, ready to send to employers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>ATS-Optimized</h3>
+                <p>Our templates are designed to pass Applicant Tracking Systems used by major companies.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacy First</h3>
+                <p>Your data never leaves your browser. We don't store any personal information.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Completely Free</h3>
+                <p>No hidden fees, no premium plans. All features available to everyone.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="templates" id="templates">
+        <div class="templates-header">
+            <h2>Choose your style</h2>
+            <p>Professional templates for every industry</p>
+        </div>
+        <div class="templates-grid">
+            <a href="/create?template=professional" class="template-card">
+                <div class="template-preview professional">
+                    <div style="text-align:center; border-bottom: 2px solid #2c3e50; padding-bottom: 8px; margin-bottom: 8px;">
+                        <div style="font-size: 1.2em; font-weight: bold; color: #2c3e50;">JOHN DOE</div>
+                        <div style="font-size: 0.7em; color: #666;">john@email.com • (555) 123-4567</div>
+                    </div>
+                    <div style="font-weight: bold; color: #2c3e50; border-bottom: 1px solid #ddd; margin: 6px 0 4px;">EXPERIENCE</div>
+                    <div style="font-size: 0.6em;">Senior Developer at Tech Corp</div>
+                    <div style="font-size: 0.5em; color: #666;">Led team of 5 engineers...</div>
+                </div>
+                <div class="template-name">Professional</div>
+            </a>
+            <a href="/create?template=modern" class="template-card">
+                <div class="template-preview modern">
+                    <div style="margin-bottom: 10px;">
+                        <div style="font-size: 1.3em; font-weight: bold;">JOHN DOE</div>
+                        <div style="font-size: 0.6em; opacity: 0.8;">Software Engineer</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 6px; border-radius: 4px; margin-bottom: 8px;">
+                        <div style="font-size: 0.55em;">5+ years experience building scalable applications</div>
+                    </div>
+                    <div style="font-size: 0.6em; font-weight: bold; margin-bottom: 4px;">SKILLS</div>
+                    <div style="display: flex; gap: 3px; flex-wrap: wrap;">
+                        <span style="background: rgba(255,255,255,0.3); padding: 2px 5px; border-radius: 3px; font-size: 0.5em;">Python</span>
+                        <span style="background: rgba(255,255,255,0.3); padding: 2px 5px; border-radius: 3px; font-size: 0.5em;">React</span>
+                    </div>
+                </div>
+                <div class="template-name">Modern</div>
+            </a>
+            <a href="/create?template=minimal" class="template-card">
+                <div class="template-preview minimal">
+                    <div style="font-size: 1.4em; font-weight: 300; letter-spacing: 2px; margin-bottom: 4px;">JOHN DOE</div>
+                    <div style="font-size: 0.6em; color: #666; margin-bottom: 10px;">john@email.com</div>
+                    <div style="font-size: 0.6em; font-weight: 600; margin-bottom: 4px;">Experience</div>
+                    <div style="font-size: 0.55em; line-height: 1.4;">Senior Developer<br>Tech Corporation, 2020-Present</div>
+                </div>
+                <div class="template-name">Minimal</div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>Built with ❤️ for job seekers everywhere</p>
+    </footer>
+</body>
+</html>

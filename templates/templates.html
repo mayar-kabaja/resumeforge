@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Templates — ResumeForge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #131316;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --border: rgba(255, 255, 255, 0.08);
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse at 30% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 100%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 11, 0.8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active { color: var(--text-primary); }
+
+        .btn-nav {
+            background: var(--gradient-1);
+            color: white;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px var(--accent-glow);
+        }
+
+        main {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .page-header h1 span {
+            font-style: italic;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.6rem 1.25rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover { border-color: var(--accent); color: var(--text-primary); }
+        .filter-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .template-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .template-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent);
+        }
+
+        .template-preview-wrapper {
+            position: relative;
+            padding: 1.5rem;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+        }
+
+        .template-preview {
+            background: white;
+            border-radius: 8px;
+            aspect-ratio: 8.5/11;
+            padding: 1.5rem;
+            font-size: 0.55rem;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .template-card:hover .template-preview { transform: scale(1.02); }
+
+        /* Professional */
+        .template-preview.professional .tp-header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .template-preview .tp-name { font-size: 1.3em; font-weight: bold; color: #2c3e50; margin-bottom: 2px; }
+        .template-preview .tp-contact { font-size: 0.55em; color: #666; }
+        .template-preview .tp-section-title {
+            font-size: 0.7em; font-weight: bold; color: #2c3e50;
+            border-bottom: 1px solid #e0e0e0; padding-bottom: 2px;
+            margin: 8px 0 5px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .template-preview .tp-text { font-size: 0.5em; color: #555; line-height: 1.4; }
+        .template-preview .tp-entry { margin-bottom: 6px; }
+        .template-preview .tp-entry-title { font-weight: 600; font-size: 0.55em; }
+        .template-preview .tp-entry-sub { font-size: 0.5em; color: #888; font-style: italic; }
+        .template-preview .tp-skills { display: flex; flex-wrap: wrap; gap: 3px; }
+        .template-preview .tp-skill { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.45em; }
+
+        /* Modern */
+        .template-preview.modern {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            padding: 0;
+        }
+        .template-preview.modern .tp-sidebar { background: rgba(0,0,0,0.2); padding: 1rem; }
+        .template-preview.modern .tp-main { padding: 1rem; }
+        .template-preview.modern .tp-name { color: white; font-size: 1.1em; }
+        .template-preview.modern .tp-contact { color: rgba(255,255,255,0.7); font-size: 0.45em; }
+        .template-preview.modern .tp-section-title { color: white; border-color: rgba(255,255,255,0.3); font-size: 0.6em; }
+        .template-preview.modern .tp-text, .template-preview.modern .tp-entry-title, .template-preview.modern .tp-entry-sub { color: rgba(255,255,255,0.9); }
+        .template-preview.modern .tp-skill { background: rgba(255,255,255,0.2); color: white; }
+
+        /* Minimal */
+        .template-preview.minimal { background: #fafafa; border-left: 4px solid #000; }
+        .template-preview.minimal .tp-header { text-align: left; border: none; padding-bottom: 0; }
+        .template-preview.minimal .tp-name { font-size: 1.5em; font-weight: 300; letter-spacing: 3px; color: #000; }
+        .template-preview.minimal .tp-section-title { color: #000; font-weight: 500; text-transform: none; letter-spacing: 0; border-color: #ddd; }
+
+        /* Creative */
+        .template-preview.creative { background: #fff8f0; position: relative; overflow: hidden; }
+        .template-preview.creative::before {
+            content: ''; position: absolute; top: -50px; right: -50px;
+            width: 150px; height: 150px; background: #ff6b6b; border-radius: 50%; opacity: 0.1;
+        }
+        .template-preview.creative .tp-name { color: #ff6b6b; font-size: 1.4em; }
+        .template-preview.creative .tp-section-title { color: #ff6b6b; border-color: #ffcaca; }
+        .template-preview.creative .tp-skill { background: #ffecec; color: #ff6b6b; }
+
+        /* Executive */
+        .template-preview.executive { background: #1a1a2e; color: #eee; }
+        .template-preview.executive .tp-header { border-color: #e94560; }
+        .template-preview.executive .tp-name { color: #fff; }
+        .template-preview.executive .tp-contact { color: #aaa; }
+        .template-preview.executive .tp-section-title { color: #e94560; border-color: #333; }
+        .template-preview.executive .tp-text, .template-preview.executive .tp-entry-title { color: #ddd; }
+        .template-preview.executive .tp-entry-sub { color: #888; }
+        .template-preview.executive .tp-skill { background: #2d2d44; color: #e94560; }
+
+        /* Tech */
+        .template-preview.tech { background: #0d1117; color: #c9d1d9; font-family: 'Courier New', monospace; }
+        .template-preview.tech .tp-header { border-color: #58a6ff; }
+        .template-preview.tech .tp-name { color: #58a6ff; font-family: 'Courier New', monospace; }
+        .template-preview.tech .tp-contact { color: #8b949e; }
+        .template-preview.tech .tp-section-title { color: #58a6ff; border-color: #21262d; }
+        .template-preview.tech .tp-skill { background: #21262d; color: #7ee787; border-radius: 0; }
+
+        .template-info { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); }
+        .template-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .template-category { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .template-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .template-tag { font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 100px; background: rgba(99, 102, 241, 0.1); color: var(--accent); }
+
+        .template-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .template-card:hover .template-overlay { opacity: 1; }
+
+        .use-template-btn {
+            background: var(--gradient-1);
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transform: translateY(10px);
+            transition: transform 0.3s;
+        }
+        .template-card:hover .use-template-btn { transform: translateY(0); }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .nav-links { display: none; }
+            .templates-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <nav>
+        <a href="/" class="logo">Resume<span>Forge</span></a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/templates" class="active">Templates</a>
+            <a href="/create" class="btn-nav">Create CV</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Choose Your <span>Template</span></h1>
+            <p>Professional designs for every industry. All templates are ATS-friendly and fully customizable.</p>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All Templates</button>
+            <button class="filter-tab" data-filter="professional">Professional</button>
+            <button class="filter-tab" data-filter="creative">Creative</button>
+            <button class="filter-tab" data-filter="modern">Modern</button>
+            <button class="filter-tab" data-filter="tech">Tech</button>
+        </div>
+
+        <div class="templates-grid">
+            <!-- Professional Template -->
+            <a href="/create?template=professional" class="template-card" data-category="professional">
+                <div class="template-preview-wrapper">
+                    <div class="template-preview professional">
+                        <div class="tp-header">
+                            <div class="tp-name">SARAH JOHNSON</div>
+                            <div class="tp-contact">sarah@email.com • (555) 123-4567 • New York, NY</div>
+                        </div>
+                        <div class="tp-section-title">Professional Summary</div>
+                        <div class="tp-text">Results-driven marketing professional with 5+ years of experience...</div>
+                        <div class="tp-section-title">Experience</div>
+                        <div class="tp-entry">
+                            <div class="tp-entry-title">Marketing Manager</div>
+                            <div class="tp-entry-sub">Tech Corp Inc. • 2020 - Present</div>
+                        </div>
+                        <div class="tp-section-title">Skills</div>
+                        <div class="tp-skills">
+                            <span class="tp-skill">Marketing</span>
+                            <span class="tp-skill">Analytics</span>
+                            <span class="tp-skill">SEO</span>
+                        </div>
+                    </div>
+                    <div class="template-overlay">
+                        <span class="use-template-btn">Use This Template</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div class="template-name">Professional</div>
+                    <div class="template-category">Clean & Classic</div>
+                    <div class="template-tags">
+                        <span class="template-tag">ATS-Friendly</span>
+                        <span class="template-tag">Corporate</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Modern Template -->
+            <a href="/create?template=modern" class="template-card" data-category="modern">
+                <div class="template-preview-wrapper">
+                    <div class="template-preview modern">
+                        <div class="tp-sidebar">
+                            <div class="tp-name">ALEX CHEN</div>
+                            <div class="tp-contact">alex@email.com<br>(555) 987-6543</div>
+                            <div class="tp-section-title">Skills</div>
+                            <div class="tp-skills" style="flex-direction: column;">
+                                <span class="tp-skill">React</span>
+                                <span class="tp-skill">Node.js</span>
+                                <span class="tp-skill">Python</span>
+                            </div>
+                        </div>
+                        <div class="tp-main">
+                            <div class="tp-section-title">About</div>
+                            <div class="tp-text">Creative developer passionate about building...</div>
+                            <div class="tp-section-title">Experience</div>
+                            <div class="tp-entry">
+                                <div class="tp-entry-title">Senior Developer</div>
+                                <div class="tp-entry-sub">StartUp Inc.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-overlay">
+                        <span class="use-template-btn">Use This Template</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div class="template-name">Modern</div>
+                    <div class="template-category">Bold & Colorful</div>
+                    <div class="template-tags">
+                        <span class="template-tag">Two-Column</span>
+                        <span class="template-tag">Startups</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Minimal Template -->
+            <a href="/create?template=minimal" class="template-card" data-category="professional">
+                <div class="template-preview-wrapper">
+                    <div class="template-preview minimal">
+                        <div class="tp-header">
+                            <div class="tp-name">EMMA DAVIS</div>
+                            <div class="tp-contact">emma@email.com</div>
+                        </div>
+                        <div class="tp-section-title">Experience</div>
+                        <div class="tp-entry">
+                            <div class="tp-entry-title">Product Designer</div>
+                            <div class="tp-entry-sub">Design Studio • 2019 - Present</div>
+                        </div>
+                        <div class="tp-entry">
+                            <div class="tp-entry-title">UI/UX Designer</div>
+                            <div class="tp-entry-sub">Agency Co. • 2017 - 2019</div>
+                        </div>
+                        <div class="tp-section-title">Education</div>
+                        <div class="tp-text">BFA Design — Art Institute</div>
+                    </div>
+                    <div class="template-overlay">
+                        <span class="use-template-btn">Use This Template</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div class="template-name">Minimal</div>
+                    <div class="template-category">Simple & Elegant</div>
+                    <div class="template-tags">
+                        <span class="template-tag">ATS-Friendly</span>
+                        <span class="template-tag">Design</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Creative Template -->
+            <a href="/create?template=creative" class="template-card" data-category="creative">
+                <div class="template-preview-wrapper">
+                    <div class="template-preview creative">
+                        <div class="tp-header" style="text-align: left; border: none;">
+                            <div class="tp-name">MAYA PATEL</div>
+                            <div class="tp-contact">Creative Director & Brand Strategist</div>
+                        </div>
+                        <div class="tp-section-title">About Me</div>
+                        <div class="tp-text">Award-winning creative with 8 years bringing brands to life...</div>
+                        <div class="tp-section-title">Experience</div>
+                        <div class="tp-entry">
+                            <div class="tp-entry-title">Creative Director</div>
+                            <div class="tp-entry-sub">Brand Agency</div>
+                        </div>
+                        <div class="tp-section-title">Skills</div>
+                        <div class="tp-skills">
+                            <span class="tp-skill">Branding</span>
+                            <span class="tp-skill">Strategy</span>
+                            <span class="tp-skill">Design</span>
+                        </div>
+                    </div>
+                    <div class="template-overlay">
+                        <span class="use-template-btn">Use This Template</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div class="template-name">Creative</div>
+                    <div class="template-category">Artistic & Unique</div>
+                    <div class="template-tags">
+                        <span class="template-tag">Creative</span>
+                        <span class="template-tag">Marketing</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Executive Template -->
+            <a href="/create?template=executive" class="template-card" data-category="professional">
+                <div class="template-preview-wrapper">
+                    <div class="template-preview executive">
+                        <div class="tp-header">
+                            <div class="tp-name">JAMES WILSON</div>
+                            <div class="tp-contact">CEO & Board Member • james@email.com</div>
+                        </div>
+                        <div class="tp-section-title">Executive Summary</div>
+                        <div class="tp-text">20+ years leading Fortune 500 companies through digital transformation...</div>
+                        <div class="tp-section-title">Leadership</div>
+                        <div class="tp-entry">
+                            <div class="tp-entry-title">Chief Executive Officer</div>
+                            <div class="tp-entry-sub">Global Corp • 2018 - Present</div>
+                        </div>
+                        <div class="tp-section-title">Expertise</div>
+                        <div class="tp-skills">
+                            <span class="tp-skill">M&A</span>
+                            <span class="tp-skill">Strategy</span>
+                            <span class="tp-skill">Leadership</span>
+                        </div>
+                    </div>
+                    <div class="template-overlay">
+                        <span class="use-template-btn">Use This Template</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div class="template-name">Executive</div>
+                    <div class="template-category">Premium & Sophisticated</div>
+                    <div class="template-tags">
+                        <span class="template-tag">C-Suite</span>
+                        <span class="template-tag">Executive</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Tech Template -->
+            <a href="/create?template=tech" class="template-card" data-category="tech">
+                <div class="template-preview-wrapper">
+                    <div class="template-preview tech">
+                        <div class="tp-header">
+                            <div class="tp-name">// RYAN_CODE</div>
+                            <div class="tp-contact">ryan@dev.io | github.com/ryancode</div>
+                        </div>
+                        <div class="tp-section-title">/* About */</div>
+                        <div class="tp-text">Full-stack developer specializing in distributed systems...</div>
+                        <div class="tp-section-title">/* Experience */</div>
+                        <div class="tp-entry">
+                            <div class="tp-entry-title">Senior Engineer</div>
+                            <div class="tp-entry-sub">FAANG Company</div>
+                        </div>
+                        <div class="tp-section-title">/* Stack */</div>
+                        <div class="tp-skills">
+                            <span class="tp-skill">TypeScript</span>
+                            <span class="tp-skill">Go</span>
+                            <span class="tp-skill">K8s</span>
+                        </div>
+                    </div>
+                    <div class="template-overlay">
+                        <span class="use-template-btn">Use This Template</span>
+                    </div>
+                </div>
+                <div class="template-info">
+                    <div class="template-name">Developer</div>
+                    <div class="template-category">Code-Inspired</div>
+                    <div class="template-tags">
+                        <span class="template-tag">Tech</span>
+                        <span class="template-tag">Engineering</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Filter functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Filter cards
+                const filter = tab.dataset.filter;
+                document.querySelectorAll('.template-card').forEach(card => {
+                    if (filter === 'all' || card.dataset.category === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
