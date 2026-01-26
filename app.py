@@ -1,34 +1,23 @@
-
 from flask import Flask, render_template, request, send_file, jsonify, make_response
 from dotenv import load_dotenv
 import requests
 import io
 import os
 
-# Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
 
-# =============================================================================
-# AI CONFIGURATION
-# =============================================================================
 
-# Set to 'groq' (free) or 'openai' (paid)
 AI_PROVIDER = os.getenv('AI_PROVIDER', 'groq')
 
-# Groq (FREE) - https://console.groq.com/keys
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', 'your-groq-api-key')
 GROQ_MODEL = 'llama-3.3-70b-versatile'
 
-# OpenAI (Paid) - https://platform.openai.com/api-keys
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'your-openai-api-key')
 OPENAI_MODEL = 'gpt-3.5-turbo'
 
 
-# =============================================================================
-# AI FUNCTIONS
-# =============================================================================
 
 def call_groq(prompt):
     """Call Groq API (FREE tier)"""
@@ -91,9 +80,6 @@ def call_ai(prompt):
     return call_groq(prompt)
 
 
-# =============================================================================
-# AI PROMPTS
-# =============================================================================
 
 def create_summary_prompt(summary, target_job=''):
     job_context = f"\nTarget job: {target_job}" if target_job else ""
@@ -120,9 +106,6 @@ Original: {bullet}
 Improved:"""
 
 
-# =============================================================================
-# PAGE ROUTES
-# =============================================================================
 
 @app.route('/')
 def home():
@@ -140,9 +123,6 @@ def templates():
     return render_template('templates.html')
 
 
-# =============================================================================
-# AI ROUTES
-# =============================================================================
 
 @app.route('/improve-summary', methods=['POST'])
 def improve_summary():
@@ -185,9 +165,6 @@ def ai_status():
         return jsonify({'provider': 'openai', 'model': OPENAI_MODEL, 'configured': configured})
 
 
-# =============================================================================
-# PDF GENERATION
-# =============================================================================
 
 @app.route('/generate', methods=['POST'])
 def generate_cv():
@@ -244,15 +221,9 @@ def generate_cv():
     except:
         html_content = render_template('cv_professional.html', data=data)
 
-    # Return HTML with print styles - user can print to PDF
     response = make_response(html_content)
     response.headers['Content-Type'] = 'text/html; charset=utf-8'
     return response
-
-
-# =============================================================================
-# RUN
-# =============================================================================
 
 if __name__ == '__main__':
     print("\n" + "="*50)

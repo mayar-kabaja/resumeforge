@@ -49,7 +49,7 @@ GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 python3 app.py
 ```
 
-🎉 **Open your browser and go to: http://localhost:8000**
+🎉 **Open your browser and go to: http://localhost:5001**
 
 ## 🎯 How to Use
 
