@@ -147,24 +147,120 @@ resumeforge/
 
 ## 🚀 Deployment
 
-### Deploy to Render (FREE)
+### Deploy to PythonAnywhere (100% FREE)
 
-1. **Push to GitHub**:
+PythonAnywhere is perfect for Flask apps with SQLite databases!
+
+#### 1. Push Your Code to GitHub
+
+```bash
+git add .
+git commit -m "Deploy ResumeForge to PythonAnywhere"
+git push origin main
+```
+
+#### 2. Create PythonAnywhere Account
+
+1. Go to [www.pythonanywhere.com](https://www.pythonanywhere.com)
+2. Click **"Pricing & signup"**
+3. Choose **"Create a Beginner account"** (100% FREE forever)
+4. Verify your email
+
+#### 3. Setup Your Web App
+
+1. **Open a Bash Console**:
+   - Dashboard → "Consoles" → "Bash"
+
+2. **Clone Your Repository**:
    ```bash
-   git add .
-   git commit -m "Deploy ResumeForge"
-   git push origin main
+   git clone https://github.com/YOUR_USERNAME/resumeforge.git
+   cd resumeforge
    ```
 
-2. **Deploy on Render**:
-   - Go to [render.com](https://render.com)
-   - Click "New +" → "Web Service"
-   - Connect your GitHub repository
-   - Render auto-detects `render.yaml`
-   - Add environment variable: `GROQ_API_KEY`
-   - Deploy! ✅
+3. **Install Dependencies**:
+   ```bash
+   pip3 install --user -r requirements.txt
+   ```
 
-3. **Your app will be live in 2-3 minutes**
+4. **Create Environment File**:
+   ```bash
+   nano .env
+   ```
+   Add your API key:
+   ```
+   GROQ_API_KEY=gsk_your_actual_api_key_here
+   AI_PROVIDER=groq
+   ```
+   Press `Ctrl+X`, then `Y`, then `Enter` to save
+
+#### 4. Configure Web App
+
+1. Go to **"Web"** tab in dashboard
+2. Click **"Add a new web app"**
+3. Choose **"Manual configuration"**
+4. Select **"Python 3.10"**
+
+5. **Configure WSGI File**:
+   - Click on the WSGI configuration file link
+   - Replace ALL content with:
+   ```python
+   import sys
+   import os
+
+   # Add your project directory to the sys.path
+   project_home = '/home/YOUR_USERNAME/resumeforge'
+   if project_home not in sys.path:
+       sys.path.insert(0, project_home)
+
+   # Load environment variables
+   from dotenv import load_dotenv
+   load_dotenv(os.path.join(project_home, '.env'))
+
+   # Import Flask app
+   from app import app as application
+   ```
+   - Replace `YOUR_USERNAME` with your PythonAnywhere username
+   - Click **"Save"**
+
+6. **Set Working Directory**:
+   - In "Web" tab, find **"Code"** section
+   - Set "Source code" to: `/home/YOUR_USERNAME/resumeforge`
+   - Set "Working directory" to: `/home/YOUR_USERNAME/resumeforge`
+
+7. **Reload Web App**:
+   - Click the big green **"Reload"** button at the top
+
+#### 5. Your App is Live! 🎉
+
+Your app will be available at:
+```
+https://YOUR_USERNAME.pythonanywhere.com
+```
+
+#### Updating Your App
+
+Whenever you make changes:
+
+```bash
+# SSH into PythonAnywhere console
+cd ~/resumeforge
+git pull origin main
+pip3 install --user -r requirements.txt
+
+# Then reload your web app from the Web tab
+```
+
+---
+
+### Alternative: Deploy to Railway
+
+Railway also offers free hosting with SQLite support:
+
+1. Go to [railway.app](https://railway.app)
+2. Click "Start a New Project" → "Deploy from GitHub"
+3. Select your repository
+4. Add environment variable: `GROQ_API_KEY`
+5. Railway auto-detects Flask and deploys
 
 ---
 

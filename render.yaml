@@ -1,3 +1,8 @@
+# Note: Render is no longer free
+# This file is kept for reference only
+# Please use PythonAnywhere (recommended) or Railway for free hosting
+# See README.md for detailed deployment instructions
+
 services:
   - type: web
     name: resumeforge
