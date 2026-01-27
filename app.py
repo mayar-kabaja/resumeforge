@@ -480,12 +480,15 @@ def generate_cv():
     return response
 
 if __name__ == '__main__':
+    port = int(os.getenv('PORT', 5001))
+    debug = os.getenv('FLASK_ENV') != 'production'
+
     print("\n" + "="*50)
     print("🚀 ResumeForge - AI CV Maker")
     print("="*50)
     print(f"📡 Provider: {AI_PROVIDER.upper()}")
     print(f"📦 Model: {GROQ_MODEL if AI_PROVIDER == 'groq' else OPENAI_MODEL}")
-    print("\n🌐 http://localhost:5001")
+    print(f"\n🌐 Port: {port}")
     print("="*50 + "\n")
 
-    app.run(debug=True, port=5001)
+    app.run(host='0.0.0.0', port=port, debug=debug)
