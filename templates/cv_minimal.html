@@ -21,7 +21,9 @@
             color: #333;
             background: #fafafa;
             border-left: 5px solid #000;
-            padding-left: 25px;
+            padding: 40px 50px 40px 45px;
+            max-width: 21cm;
+            margin: 0 auto;
         }
 
         .header {
@@ -50,6 +52,14 @@
             font-size: 9pt;
             color: #666;
             line-height: 1.8;
+        }
+
+        .contact div {
+            margin-bottom: 3px;
+        }
+
+        .contact div:last-child {
+            margin-bottom: 0;
         }
 
         .contact span {
@@ -123,6 +133,9 @@
             padding: 5px 14px;
             font-size: 9pt;
             color: #333;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color-adjust: exact;
         }
 
         .skills-section {
@@ -144,10 +157,22 @@
         <div class="job-title">{{ data.jobTitle }}</div>
         {% endif %}
         <div class="contact">
-            {% if data.email %}<span>{{ data.email }}</span>{% endif %}
-            {% if data.phone %}<span>{{ data.phone }}</span>{% endif %}
-            {% if data.location %}<span>{{ data.location }}</span>{% endif %}
-            {% if data.linkedin %}<span>{{ data.linkedin }}</span>{% endif %}
+            <div>
+                {% if data.email %}<span>{{ data.email }}</span>{% endif %}
+                {% if data.phone %}<span>{{ data.phone }}</span>{% endif %}
+                {% if data.location %}<span>{{ data.location }}</span>{% endif %}
+            </div>
+            {% if data.links %}
+            <div>
+                {% for link in data.links %}
+                    {% if link.label and link.url %}
+                        <span>{% if not loop.first %} • {% endif %}<a href="{{ link.url if link.url.startswith('http') else 'https://' + link.url }}" target="_blank" style="color: #2563eb; text-decoration: underline;">{{ link.label }}</a></span>
+                    {% elif link.url %}
+                        <span>{% if not loop.first %} • {% endif %}<a href="{{ link.url if link.url.startswith('http') else 'https://' + link.url }}" target="_blank" style="color: #2563eb; text-decoration: underline;">{{ link.url }}</a></span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -165,7 +190,7 @@
         <div class="entry">
             <div class="entry-header">
                 <span class="entry-title">{{ exp.title }}</span>
-                <span class="entry-date">{{ exp.start }} - {{ exp.end or 'Present' }}</span>
+                <span class="entry-date">{{ exp.start|format_date }} - {{ exp.end|format_date or 'Present' }}</span>
             </div>
             <div class="entry-subtitle">{{ exp.company }}</div>
             {% if exp.description %}
