@@ -1400,7 +1400,7 @@
                 <button class="step-btn" data-step="5" onclick="goToStep(5)">Skills</button>
             </div>
 
-            <form id="cv-form">
+            <form id="cv-form" method="POST">
                 <!-- Step 1: Personal Info -->
                 <div class="form-section active" data-step="1">
                     <h3 class="section-title"><span class="icon">👤</span> Personal Information</h3>
@@ -1707,16 +1707,22 @@
                     📄 Download PDF
                 </button>
                 <div class="download-instructions" style="margin-top: 16px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #667eea; font-size: 14px; line-height: 1.6; color: #495057;">
-                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">💡 How to Save as PDF:</strong>
+                    <strong style="color: #667eea; display: block; margin-bottom: 8px;">📥 How to Save as PDF:</strong>
                     <div class="desktop-instructions" style="margin-left: 8px;">
-                        ✅ <strong>CHECK</strong> "Background graphics" to show colors<br>
-                        ❌ <strong>UNCHECK</strong> "Headers and footers" to remove date/URL
+                        1️⃣ Click "Download PDF" button<br>
+                        2️⃣ Press <strong>Cmd+P</strong> (Mac) or <strong>Ctrl+P</strong> (Windows)<br>
+                        3️⃣ Choose "Save as PDF" and save to your computer<br>
+                        <br>
+                        💡 <strong>Tip:</strong> Enable "Background graphics" for colors
                     </div>
                     <div class="mobile-instructions" style="margin-left: 8px; display: none;">
-                        📱 <strong>iPhone/iPad:</strong> Share → Print → Pinch to zoom → Save as PDF<br>
-                        📱 <strong>Android:</strong> Menu (⋮) → Share → Print → Save as PDF<br>
+                        1️⃣ Click "Download PDF" button<br>
+                        2️⃣ Tap <strong>Share</strong> or <strong>⋮</strong> menu<br>
+                        3️⃣ Select <strong>Print</strong><br>
+                        4️⃣ Choose <strong>Save as PDF</strong><br>
                         <br>
-                        💡 <strong>Tip:</strong> Enable "Background graphics" in print settings for colors
+                        📱 <strong>iPhone:</strong> Pinch to zoom on preview, then save<br>
+                        📱 <strong>Android:</strong> Tap "PDF" or "Save as PDF"
                     </div>
                 </div>
                 <script>
@@ -2708,118 +2714,48 @@
             btn.textContent = '✨ Suggest Skills with AI';
         }
 
-        // Download PDF
-        async function downloadPDF() {
-            // No validation blocking - allow users to generate CV with any data they have
+        // Download PDF - opens CV in new tab
+        function downloadPDF() {
             const form = document.getElementById('cv-form');
+            const formData = new FormData(form);
 
-            // Handle education "Currently studying here" checkbox - set end date to "Present"
+            // Handle education "Currently studying here" checkbox
             document.querySelectorAll('#education-entries .entry-card').forEach(card => {
                 const index = card.dataset.index;
                 const checkbox = document.getElementById(`edu_current_${index}`);
-                const endYearInput = document.querySelector(`[name="edu_end_${index}"]`);
-
-                if (checkbox?.checked && endYearInput) {
-                    endYearInput.value = 'Present';
+                if (checkbox?.checked) {
+                    formData.set(`edu_end_${index}`, 'Present');
                 }
             });
 
-            // Add skills data to hidden inputs (create if don't exist)
-            const skillFields = ['techSkills', 'softSkills', 'languages'];
-            const skillData = {
-                'techSkills': skills['tech-skills'].join(','),
-                'softSkills': skills['soft-skills'].join(','),
-                'languages': skills['languages'].join(',')
-            };
+            // Add skills data
+            formData.set('techSkills', skills['tech-skills'].join(','));
+            formData.set('softSkills', skills['soft-skills'].join(','));
+            formData.set('languages', skills['languages'].join(','));
+            formData.set('template', currentTemplate);
 
-            skillFields.forEach(field => {
-                let input = form.querySelector(`[name="${field}"]`);
-                if (!input) {
-                    input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = field;
-                    form.appendChild(input);
-                }
-                input.value = skillData[field];
-            });
+            // Create a temporary form for submission
+            const tempForm = document.createElement('form');
+            tempForm.method = 'POST';
+            tempForm.action = '/generate';
+            tempForm.target = '_blank';
+            tempForm.style.display = 'none';
 
-            // Add template to form
-            let templateInput = form.querySelector('[name="template"]');
-            if (!templateInput) {
-                templateInput = document.createElement('input');
-                templateInput.type = 'hidden';
-                templateInput.name = 'template';
-                form.appendChild(templateInput);
+            // Add all form data as hidden inputs
+            for (const [key, value] of formData.entries()) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                tempForm.appendChild(input);
             }
-            templateInput.value = currentTemplate;
 
-            // Check if mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            // Append to body, submit, then remove
+            document.body.appendChild(tempForm);
+            tempForm.submit();
+            document.body.removeChild(tempForm);
 
-            if (isMobile) {
-                // Mobile: Submit form to open CV in new tab
-                form.target = '_blank';
-                form.action = '/generate';
-                form.method = 'POST';
-                form.submit();
-
-                showToast('CV opened in new tab! Tap ⋮ or Share to save as PDF', 'info');
-            } else {
-                // Desktop: Use print dialog via fetch
-                const downloadBtn = document.querySelector('.btn-download');
-                const originalText = downloadBtn.innerHTML;
-                downloadBtn.innerHTML = '⏳ Generating PDF...';
-                downloadBtn.disabled = true;
-
-                try {
-                    const formData = new FormData(form);
-                    const response = await fetch('/generate', {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (response.ok) {
-                        const htmlContent = await response.text();
-
-                        // Create iframe to hold CV content
-                        const iframe = document.createElement('iframe');
-                        iframe.style.position = 'fixed';
-                        iframe.style.right = '0';
-                        iframe.style.bottom = '0';
-                        iframe.style.width = '0';
-                        iframe.style.height = '0';
-                        iframe.style.border = 'none';
-                        document.body.appendChild(iframe);
-
-                        // Write content to iframe
-                        iframe.contentDocument.open();
-                        iframe.contentDocument.write(htmlContent);
-                        iframe.contentDocument.close();
-
-                        // Wait for content to load, then print
-                        iframe.onload = function() {
-                            setTimeout(() => {
-                                // Open print dialog
-                                iframe.contentWindow.focus();
-                                iframe.contentWindow.print();
-
-                                // Remove iframe after printing
-                                setTimeout(() => {
-                                    document.body.removeChild(iframe);
-                                }, 1000);
-                            }, 500);
-                        };
-                    } else {
-                        showToast('Failed to generate CV', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    showToast('Error generating CV', 'error');
-                } finally {
-                    downloadBtn.innerHTML = originalText;
-                    downloadBtn.disabled = false;
-                }
-            }
+            showToast('Opening CV in new tab! Use Cmd+P or Ctrl+P to save as PDF', 'info');
         }
 
         // Save Draft (localStorage)
