@@ -2712,7 +2712,6 @@
         async function downloadPDF() {
             // No validation blocking - allow users to generate CV with any data they have
             const form = document.getElementById('cv-form');
-            const formData = new FormData(form);
 
             // Handle education "Currently studying here" checkbox - set end date to "Present"
             document.querySelectorAll('#education-entries .entry-card').forEach(card => {
@@ -2721,54 +2720,59 @@
                 const endYearInput = document.querySelector(`[name="edu_end_${index}"]`);
 
                 if (checkbox?.checked && endYearInput) {
-                    formData.set(`edu_end_${index}`, 'Present');
+                    endYearInput.value = 'Present';
                 }
             });
 
-            // Add skills data
-            formData.set('techSkills', skills['tech-skills'].join(','));
-            formData.set('softSkills', skills['soft-skills'].join(','));
-            formData.set('languages', skills['languages'].join(','));
-            formData.set('template', currentTemplate);
+            // Add skills data to hidden inputs (create if don't exist)
+            const skillFields = ['techSkills', 'softSkills', 'languages'];
+            const skillData = {
+                'techSkills': skills['tech-skills'].join(','),
+                'softSkills': skills['soft-skills'].join(','),
+                'languages': skills['languages'].join(',')
+            };
 
-            // Show loading state on download button
-            const downloadBtn = document.querySelector('.btn-download');
-            const originalText = downloadBtn.innerHTML;
-            downloadBtn.innerHTML = '⏳ Generating PDF...';
-            downloadBtn.disabled = true;
+            skillFields.forEach(field => {
+                let input = form.querySelector(`[name="${field}"]`);
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = field;
+                    form.appendChild(input);
+                }
+                input.value = skillData[field];
+            });
 
-            try {
-                // Check if mobile device
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            // Add template to form
+            let templateInput = form.querySelector('[name="template"]');
+            if (!templateInput) {
+                templateInput = document.createElement('input');
+                templateInput.type = 'hidden';
+                templateInput.name = 'template';
+                form.appendChild(templateInput);
+            }
+            templateInput.value = currentTemplate;
 
-                if (isMobile) {
-                    // Mobile: Open in new tab with instructions
-                    const response = await fetch('/generate', {
-                        method: 'POST',
-                        body: formData
-                    });
+            // Check if mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-                    if (response.ok) {
-                        const htmlContent = await response.text();
-                        const blob = new Blob([htmlContent], { type: 'text/html' });
-                        const url = URL.createObjectURL(blob);
+            if (isMobile) {
+                // Mobile: Submit form to open CV in new tab
+                form.target = '_blank';
+                form.action = '/generate';
+                form.method = 'POST';
+                form.submit();
 
-                        // Open in new tab
-                        const newWindow = window.open(url, '_blank');
+                showToast('CV opened in new tab! Tap ⋮ or Share to save as PDF', 'info');
+            } else {
+                // Desktop: Use print dialog via fetch
+                const downloadBtn = document.querySelector('.btn-download');
+                const originalText = downloadBtn.innerHTML;
+                downloadBtn.innerHTML = '⏳ Generating PDF...';
+                downloadBtn.disabled = true;
 
-                        if (newWindow) {
-                            showToast('CV opened in new tab! Use your browser menu to save or print as PDF.', 'info');
-                        } else {
-                            showToast('Please allow pop-ups to view your CV', 'error');
-                        }
-
-                        // Clean up URL after a delay
-                        setTimeout(() => URL.revokeObjectURL(url), 10000);
-                    } else {
-                        showToast('Failed to generate CV', 'error');
-                    }
-                } else {
-                    // Desktop: Use print dialog
+                try {
+                    const formData = new FormData(form);
                     const response = await fetch('/generate', {
                         method: 'POST',
                         body: formData
@@ -2808,14 +2812,13 @@
                     } else {
                         showToast('Failed to generate CV', 'error');
                     }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Error generating CV', 'error');
+                } finally {
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.disabled = false;
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Error generating CV', 'error');
-            } finally {
-                // Restore button state
-                downloadBtn.innerHTML = originalText;
-                downloadBtn.disabled = false;
             }
         }
 
