@@ -194,6 +194,12 @@ def home():
     return render_template('index.html')
 
 
+@app.route('/og-image')
+def og_image():
+    """Generate Open Graph preview image"""
+    return render_template('og_image.html')
+
+
 @app.route('/create')
 def create():
     template = request.args.get('template', 'professional')
